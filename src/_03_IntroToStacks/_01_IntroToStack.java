@@ -9,8 +9,14 @@ public class _01_IntroToStack {
 	public static void main(String[] args) {
 		//1. Create a Stack of Doubles
 		//   Don't forget to import the Stack class
+		Stack<Double> doubles = new Stack<Double>();
 		
 		//2. Use a loop to push 100 random doubles between 0 and 100 to the Stack.
+		Random random = new Random();
+		for (int i = 0; i < 100; i++) {
+			Double rand = random.nextDouble() * 100;
+			doubles.push(rand);
+		}
 		
 		//3. Ask the user to enter in two numbers between 0 and 100, inclusive. 
 		
