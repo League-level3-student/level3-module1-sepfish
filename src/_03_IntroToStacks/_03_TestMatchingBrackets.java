@@ -23,6 +23,7 @@ public class _03_TestMatchingBrackets {
 		Stack<Character> stringB = new Stack<Character>();
 		for (int i = 0; i < b.length(); i++) {
 			stringB.push(b.charAt(i));
+			stringB.push('n');
 		}
 		
 		for (int j = 0; j < stringB.size(); j++) {
@@ -30,13 +31,27 @@ public class _03_TestMatchingBrackets {
 				for (int k = 0; k < stringB.size(); k++) {
 					if (stringB.get(k).equals('}') && k > j) {
 						stringB.remove(j);
-						stringB.remove(k);
+						stringB.remove(k-1);
+						break;
 					}
 				}
 			}
 		}
 		
-		return false;
+		for (int a = 0; a < stringB.size(); a++) {
+			if(stringB.get(a).equals('n')) {
+				stringB.remove(a);
+				a = a - 1;
+			}
+		}
+		
+		if (stringB.empty()) {
+			System.out.println("true");
+			return true;
+		} else {
+			System.out.println("false");
+			return false;
+		}
 	}
 
 }
