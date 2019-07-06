@@ -11,19 +11,20 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 public class HangMan implements KeyListener{
 	
-	//make it so that the ex-hmm loop in the main method (now with nextWord (tm)) only loops if a key is pressed :)
+	//ask for help on this awful thing i'm moving on
+	//run it multiple times you'll see the problem
 	
 	Stack<String> words = new Stack<String>();
-	ArrayList<String> labelText = new ArrayList<String>();
-	Stack<Character> wordLetters = new Stack<Character>();
-	int lives = 6;
+	ArrayList<String> labelText;
+	Stack<Character> wordLetters;
+	int lives = 10;
 	String randword;
 	JFrame frame;
 	JPanel panel;
 	JLabel label;
 	String labeltext;
 	int letterCount = 0;
-	static int timesPlayed = 0; 
+	int timesPlayed = 0; 
 	static int userNum;
 	static boolean nextWord = false;
 	
@@ -35,7 +36,7 @@ public class HangMan implements KeyListener{
 			if (!words.contains(randword)) {
 				words.push(randword);
 			}
-			System.out.println(randword);
+			JOptionPane.showMessageDialog(null, randword);
 		}
 		
 		System.out.println("hehe() is finished");
@@ -43,23 +44,20 @@ public class HangMan implements KeyListener{
 	
 	public void hehehe() {
 		System.out.println("hehehe() is started");
-		for (int j = 0; j < words.get(timesPlayed).length(); j++) {
-			wordLetters.push(words.get(timesPlayed).charAt(j));
+		wordLetters = new Stack<Character>();
+		labelText = new ArrayList<String>();
+		//it finally worked!!
+		if (timesPlayed >= words.size()) {
+			nextWord = false;
+			timesPlayed = 0;
+			lives = 10;
+			yayIWon();
+		} else { 
+			for (int j = 0; j < words.get(timesPlayed).length(); j++) {
+				wordLetters.push(words.get(timesPlayed).charAt(j));
+			}
 		}
-		frame = new JFrame();
-		panel = new JPanel();
-		label = new JLabel();
-		panel.add(label);
-		frame.add(panel);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		System.out.println("frame created");
-		for (int i = 0; i < wordLetters.size(); i++) {
-			labelText.add("_");
-		}
-		setLabelText();
-		frame.addKeyListener(this);
-		frame.pack();
-		frame.setVisible(true);
+		makeFrame();
 	}
 	
 	public void setLabelText() {
@@ -72,16 +70,38 @@ public class HangMan implements KeyListener{
 	}
 	
 	public void yayIWon() {
-		int hmmQ = JOptionPane.showOptionDialog(null, "You won! Do you want to play again?", "YES OR NO!!!!!", 0, JOptionPane.INFORMATION_MESSAGE, null, new String[] {"No", "Yes"}, null);
+		int hmmQ = JOptionPane.showOptionDialog(null, "You won! Do you want to play again?", "Is this a message?", 0, JOptionPane.INFORMATION_MESSAGE, null, new String[] {"No", "Yes"}, null);
 		if (hmmQ == 1) {
 			frame.dispose();
 			System.out.println("yes");
 			hehe();
+			hehehe();
 		} else {
 			System.out.println("no");
 			JOptionPane.showMessageDialog(null, "Have a nice day!");
 			System.exit(0);
 		}
+	}
+	
+	public void makeFrame() {
+		if(timesPlayed >0) {
+			frame.dispose();
+		}
+		frame = new JFrame();
+		panel = new JPanel();
+		label = new JLabel();
+		panel.add(label);
+		frame.add(panel);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		System.out.println("frame created");
+		for (int i = 0; i < wordLetters.size(); i++) {
+			labelText.add("_");
+		}
+		JOptionPane.showMessageDialog(null, "size of labelText is " + labelText.size());
+		setLabelText();
+		frame.addKeyListener(this);
+		frame.pack();
+		frame.setVisible(true);
 	}
 	
 	public static void main(String[] args) {
@@ -90,9 +110,11 @@ public class HangMan implements KeyListener{
 		hehe.hehehe();
 		for (int i = 0; i < userNum;) {
 			System.out.println(i);
+			System.out.println(nextWord);
 			if (nextWord) {
 				System.out.println("set nextWord to false");
 				nextWord = false;
+				JOptionPane.showMessageDialog(null, "nextWord is: " + nextWord);
 				hehe.hehehe();
 				i++;
 				System.out.println("hehehe() should run again");
@@ -118,7 +140,6 @@ public class HangMan implements KeyListener{
 		}
 		if (labeltext.indexOf('_') < 0 && timesPlayed < userNum) {
 			JOptionPane.showMessageDialog(null, "You guessed the word!");
-			frame.dispose();
 			timesPlayed++;
 			nextWord = true;
 		} else if (labeltext.indexOf('_') < 0) {
