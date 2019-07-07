@@ -11,14 +11,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 public class HangMan implements KeyListener{
 	
-	//ask for help on this awful thing i'm moving on
-	//run it multiple times you'll see the problem
+	//lives do not reset
 	
 	Stack<String> words = new Stack<String>();
 	ArrayList<String> labelText;
 	Stack<Character> wordLetters;
-	int lives = 10;
-	String randword;
+	static int lives = 10;
+	static String randword;
 	JFrame frame;
 	JPanel panel;
 	JLabel label;
@@ -27,6 +26,8 @@ public class HangMan implements KeyListener{
 	int timesPlayed = 0; 
 	static int userNum;
 	static boolean nextWord = false;
+	
+	static boolean winTemp = true;
 	
 	public void hehe() {
 		String userInput = JOptionPane.showInputDialog("How many words would you like to guess?\n(Enter a number between 1 and 266, inclusive.)");
@@ -38,16 +39,24 @@ public class HangMan implements KeyListener{
 			}
 			JOptionPane.showMessageDialog(null, randword);
 		}
-		
+		winTemp = false;
 		System.out.println("hehe() is finished");
 	}
 	
 	public void hehehe() {
 		System.out.println("hehehe() is started");
-		wordLetters = new Stack<Character>();
-		labelText = new ArrayList<String>();
+		if (wordLetters == null) {
+			wordLetters = new Stack<Character>();
+		}
+		if (labelText == null) {
+			labelText = new ArrayList<String>();
+		}
+		wordLetters.clear();
+		labelText.clear();
 		//it finally worked!!
 		if (timesPlayed >= words.size()) {
+			frame.dispose();
+			winTemp = true;
 			nextWord = false;
 			timesPlayed = 0;
 			lives = 10;
@@ -56,8 +65,8 @@ public class HangMan implements KeyListener{
 			for (int j = 0; j < words.get(timesPlayed).length(); j++) {
 				wordLetters.push(words.get(timesPlayed).charAt(j));
 			}
+			makeFrame();
 		}
-		makeFrame();
 	}
 	
 	public void setLabelText() {
@@ -74,12 +83,11 @@ public class HangMan implements KeyListener{
 		if (hmmQ == 1) {
 			frame.dispose();
 			System.out.println("yes");
-			hehe();
-			hehehe();
+			//hehe();			/* TIM: do not call */
+			//hehehe();		/* TIM: do not call */
+			/* TIM: here, set the boolean variable to show that all words were won */
 		} else {
-			System.out.println("no");
-			JOptionPane.showMessageDialog(null, "Have a nice day!");
-			System.exit(0);
+			lives = 0;
 		}
 	}
 	
@@ -106,20 +114,37 @@ public class HangMan implements KeyListener{
 	
 	public static void main(String[] args) {
 		HangMan hehe = new HangMan();
-		hehe.hehe();
-		hehe.hehehe();
-		for (int i = 0; i < userNum;) {
-			System.out.println(i);
-			System.out.println(nextWord);
-			if (nextWord) {
-				System.out.println("set nextWord to false");
-				nextWord = false;
-				JOptionPane.showMessageDialog(null, "nextWord is: " + nextWord);
-				hehe.hehehe();
-				i++;
-				System.out.println("hehehe() should run again");
+		
+		
+		/* TIM: this is the start of the while loop */
+		do {
+			winTemp = false;
+			hehe.hehe();
+			hehe.hehehe();
+			for (int i = 0; i < userNum;) {
+				if (nextWord) {
+					System.out.println("set nextWord to false");
+					nextWord = false;
+					lives = 10;
+					JOptionPane.showMessageDialog(null, "nextWord is: " + nextWord);
+					hehe.hehehe();
+					i++;
+					System.out.println("hehehe() should run again");
+				}
 			}
+			
+			/* TIM: here, check if user won all words */
+			/* TIM: if so, stay in while loop */
+			/* TIM: if not, exit while loop and display your ending message */
+			/* TIM: end of the while loop */
+		} while (winTemp && (lives>0));
+		if (lives==0) {
+			JOptionPane.showMessageDialog(null, "Oh no! You lost the game.");
+			JOptionPane.showMessageDialog(null, "The word was '" + randword + "'. Better luck next time!");
+		} else {
+			JOptionPane.showMessageDialog(null, "Have a nice day!");
 		}
+		System.exit(0);
 	}
 
 	@Override
@@ -142,14 +167,7 @@ public class HangMan implements KeyListener{
 			JOptionPane.showMessageDialog(null, "You guessed the word!");
 			timesPlayed++;
 			nextWord = true;
-		} else if (labeltext.indexOf('_') < 0) {
-			yayIWon();
-		}
-		if (lives == 0) {
-			JOptionPane.showMessageDialog(null, "Oh no! You lost the game.");
-			JOptionPane.showMessageDialog(null, "The word was '" + randword + "'. Better luck next time!");
-			System.exit(0);
-		}
+		} 
 	}
 	@Override
 	public void keyPressed(KeyEvent e) {
