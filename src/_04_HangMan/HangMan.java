@@ -11,8 +11,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 public class HangMan implements KeyListener{
 	
-	//lives do not reset
-	
 	Stack<String> words = new Stack<String>();
 	ArrayList<String> labelText;
 	Stack<Character> wordLetters;
@@ -27,24 +25,26 @@ public class HangMan implements KeyListener{
 	static int userNum;
 	static boolean nextWord = false;
 	
-	static boolean winTemp = true;
+	//static boolean winTemp = true;
 	
-	public void hehe() {
+	public void pickWords() {
 		String userInput = JOptionPane.showInputDialog("How many words would you like to guess?\n(Enter a number between 1 and 266, inclusive.)");
 		userNum = Integer.parseInt(userInput);
+		if (words == null) {
+			words = new Stack<String>();
+		}
+		words.clear();
 		for (int i = 0; i < userNum; i++) {
 			randword = Utilities.readRandomLineFromFile("dictionary.txt");
 			if (!words.contains(randword)) {
 				words.push(randword);
 			}
-			JOptionPane.showMessageDialog(null, randword);
 		}
-		winTemp = false;
-		System.out.println("hehe() is finished");
+		System.out.println("pickWords() is finished");
 	}
 	
-	public void hehehe() {
-		System.out.println("hehehe() is started");
+	public void guessWord() {
+		System.out.println("guessWord() is started");
 		if (wordLetters == null) {
 			wordLetters = new Stack<Character>();
 		}
@@ -53,10 +53,9 @@ public class HangMan implements KeyListener{
 		}
 		wordLetters.clear();
 		labelText.clear();
-		//it finally worked!!
 		if (timesPlayed >= words.size()) {
+			System.out.println("out of words");
 			frame.dispose();
-			winTemp = true;
 			nextWord = false;
 			timesPlayed = 0;
 			lives = 10;
@@ -83,11 +82,11 @@ public class HangMan implements KeyListener{
 		if (hmmQ == 1) {
 			frame.dispose();
 			System.out.println("yes");
-			//hehe();			/* TIM: do not call */
-			//hehehe();		/* TIM: do not call */
-			/* TIM: here, set the boolean variable to show that all words were won */
+			pickWords();
+			guessWord();
 		} else {
-			lives = 0;
+			JOptionPane.showMessageDialog(null, "Have a nice day!");
+			System.exit(0);
 		}
 	}
 	
@@ -105,7 +104,6 @@ public class HangMan implements KeyListener{
 		for (int i = 0; i < wordLetters.size(); i++) {
 			labelText.add("_");
 		}
-		JOptionPane.showMessageDialog(null, "size of labelText is " + labelText.size());
 		setLabelText();
 		frame.addKeyListener(this);
 		frame.pack();
@@ -114,37 +112,8 @@ public class HangMan implements KeyListener{
 	
 	public static void main(String[] args) {
 		HangMan hehe = new HangMan();
-		
-		
-		/* TIM: this is the start of the while loop */
-		do {
-			winTemp = false;
-			hehe.hehe();
-			hehe.hehehe();
-			for (int i = 0; i < userNum;) {
-				if (nextWord) {
-					System.out.println("set nextWord to false");
-					nextWord = false;
-					lives = 10;
-					JOptionPane.showMessageDialog(null, "nextWord is: " + nextWord);
-					hehe.hehehe();
-					i++;
-					System.out.println("hehehe() should run again");
-				}
-			}
-			
-			/* TIM: here, check if user won all words */
-			/* TIM: if so, stay in while loop */
-			/* TIM: if not, exit while loop and display your ending message */
-			/* TIM: end of the while loop */
-		} while (winTemp && (lives>0));
-		if (lives==0) {
-			JOptionPane.showMessageDialog(null, "Oh no! You lost the game.");
-			JOptionPane.showMessageDialog(null, "The word was '" + randword + "'. Better luck next time!");
-		} else {
-			JOptionPane.showMessageDialog(null, "Have a nice day!");
-		}
-		System.exit(0);
+			hehe.pickWords();
+			hehe.guessWord();
 	}
 
 	@Override
@@ -159,15 +128,28 @@ public class HangMan implements KeyListener{
 				setLabelText();
 			}
 		}
+		if (labeltext.indexOf('_') < 0 && timesPlayed < userNum) {
+			JOptionPane.showMessageDialog(null, "You guessed the word!");
+			timesPlayed++;
+			if (timesPlayed >= words.size()) { //no words left
+				System.out.println("out of words");
+				frame.dispose();
+				nextWord = false;
+				timesPlayed = 0;
+				lives = 10;
+				yayIWon();
+			} else { //there are still words
+				System.out.println("set nextWord to false");
+				nextWord = false;
+				lives = 10;
+				guessWord();
+				System.out.println("hehehe() should run again");
+			}
+		} 
 		if(!found) {
 			lives--;
 			setLabelText();
 		}
-		if (labeltext.indexOf('_') < 0 && timesPlayed < userNum) {
-			JOptionPane.showMessageDialog(null, "You guessed the word!");
-			timesPlayed++;
-			nextWord = true;
-		} 
 	}
 	@Override
 	public void keyPressed(KeyEvent e) {

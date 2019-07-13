@@ -2,6 +2,7 @@ package _06_Intro_To_Hash_Maps;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.JButton;
@@ -20,6 +21,7 @@ public class _02_LogSearch implements ActionListener {
 	JButton addEntry;
 	JButton searchByAiDee;
 	JButton viewList;
+	JButton removeEntry;
 	
 	public void trouble() {
 		frame = new JFrame();
@@ -28,16 +30,20 @@ public class _02_LogSearch implements ActionListener {
 		addEntry = new JButton();
 		searchByAiDee = new JButton();
 		viewList = new JButton();
+		removeEntry = new JButton();
 		addEntry.setText("Add Entry");
 		searchByAiDee.setText("Search by ID");
 		viewList.setText("View List");
+		removeEntry.setText("Remove Entry");
 		addEntry.addActionListener(this);
 		searchByAiDee.addActionListener(this);
 		viewList.addActionListener(this);
+		removeEntry.addActionListener(this);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		panel.add(addEntry);
 		panel.add(searchByAiDee);
 		panel.add(viewList);
+		panel.add(removeEntry);
 		panel.add(label);
 		frame.add(panel);
 		frame.pack();
@@ -85,6 +91,52 @@ public class _02_LogSearch implements ActionListener {
 		} else if (e.getSource().equals(searchByAiDee)) {
 			String idQ = JOptionPane.showInputDialog(null, "Search for an ID:", "New ID", JOptionPane.INFORMATION_MESSAGE);
 			int idQInt = Integer.parseInt(idQ);
+			boolean found = false;
+			String foundname = "";
+			for (Integer i : list.keySet()) {
+				if (i == idQInt) {
+					found = true;
+					foundname = list.get(i);
+				}
+			}
+			if (found) {
+				JOptionPane.showMessageDialog(null, "The name at that ID is " + foundname + ".");
+			} else {
+				JOptionPane.showMessageDialog(null, "That ID does not exist.");
+			}
+		} else if (e.getSource().equals(viewList)) {
+			String listList = "";
+			ArrayList<Integer> keys = new ArrayList<Integer>();
+			for(Integer i : list.keySet()){
+				keys.add(i);
+			}
+			for (int i = 0; i < list.size(); i++) {
+				listList = listList + "ID: ";
+				listList = listList + keys.get(i);
+				listList = listList + " Name: ";
+				listList = listList + list.get(keys.get(i));
+				listList = listList + "\n";
+			}
+			JOptionPane.showMessageDialog(null, listList);
+		} else if (e.getSource().equals(removeEntry)) {
+			String idQ = JOptionPane.showInputDialog(null, "Enter an ID:", "New ID", JOptionPane.INFORMATION_MESSAGE);
+			int idQInt = Integer.parseInt(idQ);
+			boolean found = false;
+			String foundname = "";
+			int foundkey = 0;
+			for (Integer i : list.keySet()) {
+				if (i == idQInt) {
+					found = true;
+					foundkey = i;
+					foundname = list.get(i);
+				}
+			}
+			if (found) {
+				list.remove(foundkey, foundname);
+				JOptionPane.showMessageDialog(null, "The entry at that ID was deleted.");
+			} else {
+				JOptionPane.showMessageDialog(null, "That ID does not exist.");
+			}
 		}
 	}
 	
